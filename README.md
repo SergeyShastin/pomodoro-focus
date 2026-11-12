@@ -25,6 +25,12 @@ These screenshots use **synthetic demonstration data**, not a user's session his
 ![Statistics in the light theme](docs/images/statistics-light.png)
 ![Statistics in the OLED theme](docs/images/statistics-oled.png)
 
+## Try the Linux release (no Flutter required)
+
+Download the Linux x86_64 archive from [Releases](https://github.com/SergeyShastin/pomodoro-focus/releases/latest), extract it and run `./bundle/pomodoro_focus`, or use `./install.sh` to add it to your application menu. Add `--autostart` to enable startup at desktop login.
+
+The first binary is built on Ubuntu 26.04; older distributions are not verified. See the [installation guide](docs/LINUX_INSTALL.md) for runtime libraries, checksums, setup and removal.
+
 ## Build on Linux
 
 Tested toolchain: Flutter 3.50.0 stable / Dart 3.14.0. Install Flutter separately and ensure `flutter doctor` reports Linux desktop support.
