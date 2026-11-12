@@ -1,0 +1,61 @@
+name: pomodoro_focus
+description: "Cross-platform Pomodoro Focus Timer and World Clock"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^2.6.1
+
+  # Theming & Design
+  dynamic_color: ^1.7.0
+
+  # Local Storage & Database
+  drift: ^2.22.0
+  drift_flutter: ^0.2.2
+  sqlite3: ^2.4.6
+  shared_preferences: ^2.3.3
+
+  # Timezone & Clock
+  timezone: ^0.9.4
+  flutter_timezone: ^3.0.1
+  clock: ^1.1.1
+  intl: ^0.20.2
+
+  # Notifications & Audio
+  flutter_local_notifications: ^18.0.1
+  audioplayers: ^6.1.0
+
+  # Desktop & Linux Integration
+  window_manager: ^0.4.3
+  tray_manager: ^0.2.4
+  dbus: ^0.7.10
+
+  # Data Visualization
+  fl_chart: ^0.70.1
+
+dev_dependencies:
+  integration_test:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.14
+  drift_dev: ^2.22.0
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+  generate: true
+  assets:
+    - assets/audio/
+    - assets/icons/

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Focus & World Clock
+Comment=Pomodoro focus timer and world clocks
+Exec="@CMAKE_INSTALL_PREFIX@/@BINARY_NAME@"
+Icon=com.focus.pomodoro_focus
+Terminal=false
+Categories=Utility;Clock;
+StartupNotify=true
+StartupWMClass=com.focus.pomodoro_focus

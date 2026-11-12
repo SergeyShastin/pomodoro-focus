@@ -1,0 +1,185 @@
+{
+  "@@locale": "en",
+  "appTitle": "Focus & World Clock",
+  "timerTab": "Timer",
+  "worldClockTab": "World Clock",
+  "statsTab": "Statistics",
+  "settingsTab": "Settings",
+
+  "focusPhase": "Focus",
+  "shortBreakPhase": "Short Break",
+  "longBreakPhase": "Long Break",
+
+  "start": "Start",
+  "pause": "Pause",
+  "resume": "Resume",
+  "skip": "Skip",
+  "reset": "Reset",
+  "taskInputHint": "What are you working on?",
+  "taskInputLabel": "Current Task",
+  "roundIndicator": "Session {current} of {total}",
+  "@roundIndicator": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+
+  "sessionCompleted": "Focus session completed!",
+  "breakCompleted": "Break completed! Time to focus.",
+
+  "worldClockTitle": "World Clock",
+  "localTime": "Your Time",
+  "searchCityHint": "Search city or timezone...",
+  "addCity": "Add City",
+  "delete": "Delete",
+  "dayTime": "Day",
+  "nightTime": "Night",
+  "aheadOfLocal": "{hours}h ahead",
+  "@aheadOfLocal": {
+    "placeholders": {
+      "hours": { "type": "int" }
+    }
+  },
+  "behindLocal": "{hours}h behind",
+  "@behindLocal": {
+    "placeholders": {
+      "hours": { "type": "int" }
+    }
+  },
+  "sameTime": "Same time",
+
+  "statsTitle": "Focus Statistics",
+  "todayFocus": "Today",
+  "weekFocus": "This Week",
+  "completedPomodoros": "Completed Pomodoros",
+  "focusMinutes": "Focus Minutes",
+  "focusChartTitle": "Daily Focus",
+  "sessionHistoryTitle": "Session History",
+  "noSessionsYet": "No focus sessions recorded yet.",
+
+  "settingsTitle": "Settings",
+  "timerSettings": "Timer Durations",
+  "workDurationMinutes": "Focus Duration: {minutes} min",
+  "@workDurationMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "shortBreakDurationMinutes": "Short Break: {minutes} min",
+  "@shortBreakDurationMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "longBreakDurationMinutes": "Long Break: {minutes} min",
+  "@longBreakDurationMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "sessionsBeforeLongBreak": "Sessions before long break: {count}",
+  "@sessionsBeforeLongBreak": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoStartBreaks": "Auto-start breaks",
+  "autoStartPomodoros": "Auto-start next pomodoro",
+
+  "dndSettings": "Do Not Disturb",
+  "enableDndDuringWork": "Enable DND during focus sessions",
+  "dndKdeDescription": "Mutes desktop notifications via KDE Plasma D-Bus",
+  "dndAndroidPermissionNeeded": "Notification Policy Access is required on Android to toggle DND.",
+  "grantPermission": "Grant Permission",
+
+  "soundAndNotifications": "Sound & Notifications",
+  "enableNotifications": "System notifications",
+  "enableSound": "Sound effects",
+
+  "appearanceSettings": "Appearance",
+  "themeMode": "Theme",
+  "themeSystem": "System default",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeOled": "OLED Pure Black (#000000)",
+  "dynamicColor": "Dynamic system accent color",
+  "accentColor": "Accent Color",
+
+  "miniTimer": "Mini Timer",
+  "returnToFullWindow": "Expand Window",
+  "minimizeToTrayOnClose": "Minimize to tray when closing the window",
+  "minutesShort": "min",
+  "statsLoadError": "Could not load statistics. Please try again.",
+  "turnOffScreenOnBreak": "Turn off displays when a break begins",
+  "turnOffScreenOnBreakDescription": "Displays turn off after a pomodoro and wake automatically when the break ends. No locking; a mouse movement or key can wake them sooner.",
+  "screenPowerUnavailable": "Requires KDE Plasma, a Wayland session and kscreen-doctor.",
+  "goalsSettings": "Focus goals",
+  "dailyGoal": "Daily goal",
+  "weeklyGoal": "Weekly goal",
+  "goalHint": "Completed pomodoros. Set 0 to turn a goal off.",
+  "goalDisabled": "Goal is off",
+  "goalRangeError": "Enter a whole number from 0 to {max}.",
+  "@goalRangeError": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "saveGoal": "Save",
+  "cancelAction": "Cancel",
+  "fontSize": "Text size",
+  "fontSizeHint": "Text scale across the app",
+  "earnedToday": "Earned today",
+  "pomodorosLabel": "Pomodoros",
+  "lastSevenDays": "Last 7 days",
+  "minutesLabel": "Minutes",
+  "calendarWeek": "Monday – Sunday",
+  "goalReached": "Goal reached",
+  "goalProgress": "{completed} of {target} pomodoros",
+  "@goalProgress": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "goalRemaining": "{count} to go",
+  "@goalRemaining": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "goalExtra": "+{count} beyond your goal",
+  "@goalExtra": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "goalsSetupHint": "Set a goal in Settings",
+  "focusTimeValue": "{minutes} focus minutes",
+  "@focusTimeValue": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "earnedPomodoros": "{count, plural, one{{count} pomodoro} other{{count} pomodoros}}",
+  "@earnedPomodoros": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onePomodoroReward": "+1 pomodoro"
+}
