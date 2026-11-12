@@ -27,9 +27,9 @@ These screenshots use **synthetic demonstration data**, not a user's session his
 
 ## Try the Linux release (no Flutter required)
 
-Download the Linux x86_64 archive from [Releases](https://github.com/SergeyShastin/pomodoro-focus/releases/latest), extract it and run `./bundle/pomodoro_focus`, or use `./install.sh` to add it to your application menu. Add `--autostart` to enable startup at desktop login.
+Download the `.deb` from [Releases](https://github.com/SergeyShastin/pomodoro-focus/releases/latest) and open it with your graphical package installer. It installs runtime dependencies and adds the app to your application menu. The package targets **Ubuntu/Kubuntu 26.04 amd64**; Flutter is not needed.
 
-The first binary is built on Ubuntu 26.04; older distributions are not verified. See the [installation guide](docs/LINUX_INSTALL.md) for runtime libraries, checksums, setup and removal.
+The portable Linux x86_64 archive is also available. See the [installation guide](docs/LINUX_INSTALL.md) for both methods, checksums, migration from a user-local installation and removal. Automatic update checks and an APT update repository are not implemented yet.
 
 ## Build on Linux
 

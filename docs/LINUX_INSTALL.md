@@ -3,6 +3,30 @@
 The first binary release targets **Linux x86_64, built on Ubuntu 26.04**.
 KDE Plasma 6 is the primary desktop. Other distributions and older Ubuntu releases are not verified; this is not a universal Linux package.
 
+## Recommended: graphical installation with .deb
+
+Download `pomodoro-focus_1.0.0-1_amd64.deb` from the [v1.0.0 release](https://github.com/SergeyShastin/pomodoro-focus/releases/tag/v1.0.0). Open the downloaded file with your graphical package installer (Discover or another installer that supports local Debian packages) and choose Install. Your system may request administrator authentication. The package manager installs runtime dependencies and adds **Focus & World Clock** to the application menu. Flutter is not required.
+
+This package targets **Ubuntu/Kubuntu 26.04 amd64**. It intentionally requires the 26.04 libc baseline; it is not intended for older Ubuntu releases. If your desktop does not associate `.deb` files with an installer, an alternative is:
+
+```bash
+sudo apt install ./pomodoro-focus_1.0.0-1_amd64.deb
+```
+
+The app is installed in `/opt/pomodoro-focus`, with its launcher at `/usr/bin/pomodoro-focus`. No desktop shortcut or autostart is enabled automatically. Enable autostart through KDE System Settings → Autostart → Add Application if desired. Remove the package through your package manager; settings and history are retained.
+
+**Moving from the earlier user-local installer:** quit the running app before switching. A user-local menu entry or autostart entry takes precedence over the system entry and can keep launching the older copy. Remove `~/.local/share/applications/com.focus.pomodoro_focus.desktop` and, if present, `~/.config/autostart/com.focus.pomodoro_focus.desktop` using your file manager, then recreate autostart for the system-installed app if wanted. The old bundle in `~/.local/opt/pomodoro-focus` can be removed afterwards. Do not delete application data: saved settings and history are shared by the two installation methods.
+
+For optional verification, download the adjacent `.deb.sha256` file alongside the `.deb` and run:
+
+```bash
+sha256sum --check pomodoro-focus_1.0.0-1_amd64.deb.sha256
+```
+
+**Updates:** this release does not configure an APT repository or check for new versions inside the app. Installing a newer `.deb` with the same package name will upgrade it. A Git push alone does not publish a binary update; a new package must be built and released. Close and reopen the app after upgrading. Automatic update notifications are a separate planned feature.
+
+## Alternative: portable archive
+
 ## 1. Install runtime libraries
 
 On Ubuntu/Kubuntu 26.04:
@@ -80,3 +104,13 @@ Adjust paths if you use XDG overrides or a custom installation prefix. This leav
 The application is licensed under [MIT](../LICENSE), including v1.0.0. The release archive includes `LICENSE` next to this installation guide, along with dependency notices in `THIRD_PARTY_NOTICES.txt` and the Flutter license in `FLUTTER_LICENSE`. Dependencies retain their respective license terms.
 
 The v1.0.0 archive was repackaged to include the MIT license and this updated guide. Application binaries are unchanged. Download the current archive and its matching `SHA256SUMS` together; the checksum of an earlier download will differ.
+
+## Build a Debian package from source
+
+After creating a Linux release bundle:
+
+```bash
+python3 tool/build_linux_deb.py --bundle build/linux/x64/release/bundle --version 1.0.0-1 --output dist
+```
+
+This requires `dpkg-deb` and does not use sudo or install the package. The packager includes MIT, Flutter and dependency notices, creates a root-owned package with declared runtime dependencies, and writes a separate `.deb.sha256` checksum. Use `--flutter-license-file` if the Flutter license cannot be found beside the bundle or through the Flutter SDK on PATH. Use a higher Debian version when packaging an update; `SOURCE_DATE_EPOCH` can be set for reproducible timestamps. The prebuilt archive remains available independently.

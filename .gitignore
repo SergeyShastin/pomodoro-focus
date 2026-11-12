@@ -62,3 +62,6 @@ mcp.json
 shared_preferences.json
 __pycache__/
 *.pyc
+
+# Local Debian release artifacts
+dist/
