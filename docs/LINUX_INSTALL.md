@@ -77,4 +77,4 @@ Adjust paths if you use XDG overrides or a custom installation prefix. This leav
 
 ## Licenses
 
-A license for the application itself has not been selected. The archive includes dependency notices in `THIRD_PARTY_NOTICES.txt` and the Flutter license in `FLUTTER_LICENSE`. Those notices do not grant a separate license for this application's own code.
+The application is licensed under [MIT](../LICENSE), including v1.0.0. Download the `LICENSE` attachment alongside the v1.0.0 archive: the original archive predates this license addition and its embedded installation guide contains the earlier license status. The binary archive and its checksum are unchanged. Dependency notices in `THIRD_PARTY_NOTICES.txt` and `FLUTTER_LICENSE` retain their respective terms.

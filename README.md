@@ -93,4 +93,4 @@ Generated localization and Drift files are included. After changing database def
 
 ## License
 
-A project license has not been selected yet. Dependency licenses remain with their respective authors.
+[MIT](LICENSE), including the v1.0.0 release. Dependency licenses remain with their respective authors.
