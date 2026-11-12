@@ -351,10 +351,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get checkUpdates => 'Check now';
 
   @override
-  String get updateInstallerOpened =>
-      'Installer opened. Finish installation, then quit and restart the app. An unfinished timer will not be restored.';
-
-  @override
   String get updateUnsupported =>
       'Automatic .deb updates require Ubuntu/Kubuntu 26.04 or newer on x86_64.';
 
@@ -367,14 +363,34 @@ class AppLocalizationsEn extends AppLocalizations {
       'The package could not be verified. It was not opened. Try checking again.';
 
   @override
-  String get updateInstallerError =>
-      'Could not open the system installer. Install a graphical .deb installer and retry.';
-
-  @override
   String get updateNetworkError =>
       'Could not contact GitHub or download the update. Check your connection and try again.';
 
   @override
   String get updateNotificationBody =>
       'Open the app to download the update and launch the system installer.';
+
+  @override
+  String appVersion(String version) {
+    return 'Version $version';
+  }
+
+  @override
+  String get updateInstalling =>
+      'Installing update… Confirm the system authorization prompt if requested.';
+
+  @override
+  String get updateRestartWaiting =>
+      'Update installed. The app will restart after the current focus session is completed or reset and its history has been saved.';
+
+  @override
+  String get updateRestarting => 'Restarting the app…';
+
+  @override
+  String get updateInstallationError =>
+      'Installation was cancelled or failed. The app has not been restarted. You can retry.';
+
+  @override
+  String get updateRestartError =>
+      'The update is installed, but the app could not restart. Retry or use Quit and launch the app again.';
 }

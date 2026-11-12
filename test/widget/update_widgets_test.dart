@@ -1,3 +1,4 @@
+import 'package:pomodoro_focus/core/updates/update_restart.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +11,9 @@ import 'package:pomodoro_focus/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Backend implements UpdateBackend {
+  bool installed = false;
+  @override
+  Future<bool> isInstalled(String version) async => installed;
   int downloads = 0, opens = 0;
   @override
   Future<String> currentVersion() async => '1.1.0';
@@ -27,8 +31,9 @@ class Backend implements UpdateBackend {
   }
 
   @override
-  Future<void> openInstaller(File file) async {
+  Future<void> installPackage(File file) async {
     opens++;
+    installed = true;
   }
 }
 
@@ -45,6 +50,12 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
+          updateRestartCoordinatorProvider.overrideWithValue(
+            UpdateRestartCoordinator(
+              canRestart: () => true,
+              restart: () async {},
+            ),
+          ),
           updateBackendProvider.overrideWithValue(backend),
         ],
       );
@@ -84,7 +95,7 @@ void main() {
       expect(find.text('Version 2.0.0 is available'), findsOneWidget);
       await tester.tap(find.text('Update'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('Installer opened.'), findsOneWidget);
+      expect(find.textContaining('Restarting the app…'), findsOneWidget);
       expect(find.text('Page 1'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
@@ -104,6 +115,12 @@ void main() {
         ProviderScope(
           overrides: [
             sharedPreferencesProvider.overrideWithValue(prefs),
+            updateRestartCoordinatorProvider.overrideWithValue(
+              UpdateRestartCoordinator(
+                canRestart: () => true,
+                restart: () async {},
+              ),
+            ),
             updateBackendProvider.overrideWithValue(backend),
           ],
           child: MaterialApp(
@@ -117,6 +134,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      expect(find.text('Version 1.1.0'), findsOneWidget);
       await tester.tap(find.text('Check now'));
       await tester.pumpAndSettle();
       expect(find.text('Version 2.0.0 is available'), findsOneWidget);
@@ -124,7 +142,7 @@ void main() {
       await tester.tap(find.text('Update'));
       await tester.pumpAndSettle();
       expect([backend.downloads, backend.opens], [1, 1]);
-      expect(find.textContaining('Installer opened.'), findsOneWidget);
+      expect(find.textContaining('Restarting the app…'), findsOneWidget);
       await tester.tap(find.byType(Switch));
       await tester.pumpAndSettle();
       expect(prefs.getBool('automatic_updates'), isTrue);

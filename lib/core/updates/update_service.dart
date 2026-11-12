@@ -10,7 +10,8 @@ enum UpdateFailure {
   unsupported,
   packageMissing,
   integrity,
-  installer,
+  installation,
+  restart,
 }
 
 class UpdateException implements Exception {
@@ -80,7 +81,8 @@ abstract class UpdateBackend {
   Future<String> currentVersion();
   Future<ReleaseUpdate?> check(String currentVersion);
   Future<File> download(ReleaseUpdate update, void Function(double) progress);
-  Future<void> openInstaller(File file);
+  Future<void> installPackage(File file);
+  Future<bool> isInstalled(String version);
 }
 
 /// Requests only public release metadata and an explicitly selected package.
@@ -88,12 +90,12 @@ abstract class UpdateBackend {
 class GithubUpdateService implements UpdateBackend {
   final Future<String> Function() version;
   final Future<bool> Function() supported;
-  final Future<void> Function(File) launch;
+  final Future<void> Function(File) install;
   final HttpClient Function() clientFactory;
   GithubUpdateService({
     required this.version,
     required this.supported,
-    required this.launch,
+    required this.install,
     HttpClient Function()? clientFactory,
   }) : clientFactory = clientFactory ?? HttpClient.new;
 
@@ -126,43 +128,6 @@ class GithubUpdateService implements UpdateBackend {
     if (values['ID'] != 'ubuntu') return false;
     final number = double.tryParse(values['VERSION_ID'] ?? '') ?? 0;
     return number >= 26.04;
-  }
-
-  static Future<void> launchInstaller(
-    File file, {
-    Future<Process> Function(String, List<String>)? start,
-    String? desktop,
-  }) async {
-    final startProcess =
-        start ??
-        (String command, List<String> arguments) =>
-            Process.start(command, arguments);
-    final kde = (desktop ?? Platform.environment['XDG_CURRENT_DESKTOP'] ?? '')
-        .toLowerCase()
-        .contains('kde');
-    final commands = <List<String>>[
-      if (kde)
-        ['plasma-discover', '--local-filename', file.absolute.path]
-      else
-        ['gnome-software', '--local-filename', file.absolute.path],
-      ['xdg-open', file.absolute.uri.toString()],
-    ];
-    for (final command in commands) {
-      try {
-        // No shell, sudo or installation command: the graphical installer owns authorization.
-        final process = await startProcess(command.first, command.sublist(1));
-        process.stdout.drain<void>();
-        process.stderr.drain<void>();
-        final code = await process.exitCode.timeout(
-          const Duration(seconds: 5),
-          onTimeout: () => 0,
-        );
-        if (code == 0) return;
-      } on ProcessException {
-        // Try the desktop's file association when its package installer is absent.
-      }
-    }
-    throw const UpdateException(UpdateFailure.installer);
   }
 
   Future<HttpClientResponse> _get(HttpClient client, Uri uri) async {
@@ -293,5 +258,35 @@ class GithubUpdateService implements UpdateBackend {
   }
 
   @override
-  Future<void> openInstaller(File file) => launch(file);
+  Future<void> installPackage(File file) => install(file);
+
+  @override
+  Future<bool> isInstalled(String version) async {
+    try {
+      final result = await Process.run('dpkg-query', [
+        '-W',
+        '-f',
+        r'${Status}\n${Version}',
+        'pomodoro-focus',
+      ]).timeout(const Duration(seconds: 10));
+      final lines = result.stdout.toString().trim().split('\n');
+      if (result.exitCode != 0 ||
+          lines.length != 2 ||
+          lines.first != 'install ok installed') {
+        return false;
+      }
+      final metadata =
+          jsonDecode(
+                await File(
+                  '/opt/pomodoro-focus/data/flutter_assets/version.json',
+                ).readAsString(),
+              )
+              as Map<String, dynamic>;
+      final actual = metadata['version'] as String;
+      return RegExp('^${RegExp.escape(actual)}-[0-9]+\$').hasMatch(lines[1]) &&
+          Version.parse(actual) >= Version.parse(version);
+    } catch (_) {
+      return false;
+    }
+  }
 }

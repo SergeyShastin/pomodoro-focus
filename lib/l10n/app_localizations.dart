@@ -694,12 +694,6 @@ abstract class AppLocalizations {
   /// **'Check now'**
   String get checkUpdates;
 
-  /// No description provided for @updateInstallerOpened.
-  ///
-  /// In en, this message translates to:
-  /// **'Installer opened. Finish installation, then quit and restart the app. An unfinished timer will not be restored.'**
-  String get updateInstallerOpened;
-
   /// No description provided for @updateUnsupported.
   ///
   /// In en, this message translates to:
@@ -718,12 +712,6 @@ abstract class AppLocalizations {
   /// **'The package could not be verified. It was not opened. Try checking again.'**
   String get updateIntegrityError;
 
-  /// No description provided for @updateInstallerError.
-  ///
-  /// In en, this message translates to:
-  /// **'Could not open the system installer. Install a graphical .deb installer and retry.'**
-  String get updateInstallerError;
-
   /// No description provided for @updateNetworkError.
   ///
   /// In en, this message translates to:
@@ -735,6 +723,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open the app to download the update and launch the system installer.'**
   String get updateNotificationBody;
+
+  /// No description provided for @appVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String appVersion(String version);
+
+  /// No description provided for @updateInstalling.
+  ///
+  /// In en, this message translates to:
+  /// **'Installing update… Confirm the system authorization prompt if requested.'**
+  String get updateInstalling;
+
+  /// No description provided for @updateRestartWaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Update installed. The app will restart after the current focus session is completed or reset and its history has been saved.'**
+  String get updateRestartWaiting;
+
+  /// No description provided for @updateRestarting.
+  ///
+  /// In en, this message translates to:
+  /// **'Restarting the app…'**
+  String get updateRestarting;
+
+  /// No description provided for @updateInstallationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Installation was cancelled or failed. The app has not been restarted. You can retry.'**
+  String get updateInstallationError;
+
+  /// No description provided for @updateRestartError.
+  ///
+  /// In en, this message translates to:
+  /// **'The update is installed, but the app could not restart. Retry or use Quit and launch the app again.'**
+  String get updateRestartError;
 }
 
 class _AppLocalizationsDelegate

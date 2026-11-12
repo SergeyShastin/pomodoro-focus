@@ -126,7 +126,7 @@ Priority: optional
 Architecture: amd64
 Maintainer: Pomodoro Focus Contributors <contributors@example.invalid>
 Installed-Size: {installed_size}
-Depends: libc6 (>= 2.43), libstdc++6 (>= 11), libgtk-3-0t64, libayatana-appindicator3-1, libgstreamer1.0-0, libgstreamer-plugins-base1.0-0, gstreamer1.0-plugins-good, libsqlite3-0, xdg-utils
+Depends: libc6 (>= 2.43), libstdc++6 (>= 11), libgtk-3-0t64, libayatana-appindicator3-1, libgstreamer1.0-0, libgstreamer-plugins-base1.0-0, gstreamer1.0-plugins-good, libsqlite3-0, xdg-utils, packagekit
 Suggests: libkscreen-bin, xwayland
 Homepage: https://github.com/SergeyShastin/pomodoro-focus
 Description: Offline Pomodoro timer and world clock

@@ -1,3 +1,4 @@
+import 'package:package_info_plus/package_info_plus.dart';
 import 'dart:ffi' as ffi;
 import 'dart:io';
 import 'package:flutter/foundation.dart';
@@ -26,14 +27,15 @@ Future<void> main() async {
   if (!kIsWeb && (Platform.isLinux || Platform.isMacOS || Platform.isWindows)) {
     try {
       await windowManager.ensureInitialized();
-      final windowOptions = const WindowOptions(
+      final version = (await PackageInfo.fromPlatform()).version;
+      final windowOptions = WindowOptions(
         size: Size(920, 700),
         minimumSize: Size(380, 500),
         center: true,
         backgroundColor: Colors.transparent,
         skipTaskbar: false,
         titleBarStyle: TitleBarStyle.normal,
-        title: 'Pomodoro Focus',
+        title: 'Pomodoro Focus $version',
       );
       await windowManager.waitUntilReadyToShow(windowOptions, () async {
         await windowManager.show();
@@ -48,9 +50,7 @@ Future<void> main() async {
 
   runApp(
     ProviderScope(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
-      ],
+      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
       child: const PomodoroApp(),
     ),
   );

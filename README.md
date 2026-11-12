@@ -29,7 +29,7 @@ These screenshots use **synthetic demonstration data**, not a user's session his
 
 Download the `.deb` from [Releases](https://github.com/SergeyShastin/pomodoro-focus/releases/latest) and open it with your graphical package installer. It installs runtime dependencies and adds the app to your application menu. The package targets **Ubuntu/Kubuntu 26.04 amd64**; Flutter is not needed.
 
-The portable Linux x86_64 archive is also available. See the [installation guide](docs/LINUX_INSTALL.md) for both methods, checksums, migration from a user-local installation and removal. Version 1.1.0 adds optional GitHub Releases checks and a button to download a verified `.deb` and open the system installer. An APT repository is not configured.
+The portable Linux x86_64 archive is also available. See the [installation guide](docs/LINUX_INSTALL.md) for both methods, checksums, migration from a user-local installation and removal. Version 1.2.0 uses PackageKit for verified `.deb` updates with system authorization and automatic safe restart. The running version is visible in Settings and the window title. Versions 1.1.x require one final manual restart to load this behavior. An APT repository is not configured.
 
 ## Build on Linux
 

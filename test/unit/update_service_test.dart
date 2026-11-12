@@ -25,8 +25,6 @@ Map<String, dynamic> release({String version = '1.10.0', List<int>? bytes}) {
   };
 }
 
-class InstallerProcess extends Mock implements Process {}
-
 class Client extends Mock implements HttpClient {}
 
 class Request extends Mock implements HttpClientRequest {}
@@ -68,49 +66,6 @@ class Response extends Stream<List<int>> implements HttpClientResponse {
 
 void main() {
   setUpAll(() => registerFallbackValue(Uri.https('github.com')));
-  test(
-    'opens KDE installer with one local path argument, falls back without a shell',
-    () async {
-      final calls = <List<String>>[];
-      final process = InstallerProcess();
-      when(() => process.stdout).thenAnswer((_) => const Stream.empty());
-      when(() => process.stderr).thenAnswer((_) => const Stream.empty());
-      when(() => process.exitCode).thenAnswer((_) async => 0);
-      final file = File('/tmp/folder with spaces/update.deb');
-      await GithubUpdateService.launchInstaller(
-        file,
-        desktop: 'KDE',
-        start: (command, args) async {
-          calls.add([command, ...args]);
-          return process;
-        },
-      );
-      expect(calls.single, ['plasma-discover', '--local-filename', file.path]);
-      calls.clear();
-      await GithubUpdateService.launchInstaller(
-        file,
-        desktop: 'KDE',
-        start: (command, args) async {
-          calls.add([command, ...args]);
-          if (command == 'plasma-discover') {
-            throw const ProcessException('plasma-discover', [], 'missing');
-          }
-          return process;
-        },
-      );
-      expect(calls.last, ['xdg-open', file.uri.toString()]);
-      await expectLater(
-        GithubUpdateService.launchInstaller(
-          file,
-          desktop: 'KDE',
-          start: (_, _) async {
-            throw const ProcessException('missing', []);
-          },
-        ),
-        throwsA(isA<UpdateException>()),
-      );
-    },
-  );
   test('numeric versions, current versions and prereleases', () {
     expect(ReleaseUpdate.parse(release(), '1.9.9')!.version, '1.10.0');
     expect(ReleaseUpdate.parse(release(), '1.10.0+2'), isNull);
@@ -153,7 +108,7 @@ void main() {
     service = GithubUpdateService(
       version: () async => '1.0.0',
       supported: () async => true,
-      launch: (_) async {},
+      install: (_) async {},
       clientFactory: () => client,
     );
   });

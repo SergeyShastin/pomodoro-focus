@@ -19,8 +19,12 @@ String updateStatus(AppLocalizations l10n, UpdateState state) {
       return l10n.updateAvailable(state.release!.version);
     case UpdatePhase.downloading:
       return l10n.updateDownloading((state.progress * 100).round());
-    case UpdatePhase.opened:
-      return l10n.updateInstallerOpened;
+    case UpdatePhase.installing:
+      return l10n.updateInstalling;
+    case UpdatePhase.waitingRestart:
+      return l10n.updateRestartWaiting;
+    case UpdatePhase.restarting:
+      return l10n.updateRestarting;
     case UpdatePhase.failed:
       switch (state.failure) {
         case UpdateFailure.unsupported:
@@ -29,8 +33,10 @@ String updateStatus(AppLocalizations l10n, UpdateState state) {
           return l10n.updatePackageMissing;
         case UpdateFailure.integrity:
           return l10n.updateIntegrityError;
-        case UpdateFailure.installer:
-          return l10n.updateInstallerError;
+        case UpdateFailure.installation:
+          return l10n.updateInstallationError;
+        case UpdateFailure.restart:
+          return l10n.updateRestartError;
         default:
           return l10n.updateNetworkError;
       }
@@ -79,7 +85,8 @@ class UpdateHost extends ConsumerWidget {
                       updateStatus(l10n, state),
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
-                    if (state.phase != UpdatePhase.opened)
+                    if (state.phase == UpdatePhase.available ||
+                        state.phase == UpdatePhase.failed)
                       FilledButton.tonal(
                         onPressed:
                             ref.read(updateControllerProvider.notifier).busy
@@ -120,8 +127,22 @@ class UpdatesSettingsCard extends ConsumerWidget {
           ),
           ListTile(
             title: Text(l10n.updatesTitle),
-            subtitle: Text(updateStatus(l10n, state)),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ref
+                    .watch(runningVersionProvider)
+                    .when(
+                      data: (version) => Text(l10n.appVersion(version)),
+                      loading: () => const SizedBox.shrink(),
+                      error: (_, _) => const SizedBox.shrink(),
+                    ),
+                Text(updateStatus(l10n, state)),
+              ],
+            ),
           ),
+          if (state.phase == UpdatePhase.installing)
+            const LinearProgressIndicator(),
           if (state.phase == UpdatePhase.downloading)
             LinearProgressIndicator(value: state.progress),
           Padding(
@@ -134,7 +155,9 @@ class UpdatesSettingsCard extends ConsumerWidget {
                   onPressed: controller.busy ? null : () => controller.check(),
                   child: Text(l10n.checkUpdates),
                 ),
-                if (state.release != null)
+                if (state.release != null &&
+                    (state.phase == UpdatePhase.available ||
+                        state.phase == UpdatePhase.failed))
                   FilledButton(
                     onPressed: controller.busy
                         ? null

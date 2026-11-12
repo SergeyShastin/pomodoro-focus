@@ -3,13 +3,14 @@ import '../../settings/domain/settings_state.dart';
 import 'pomodoro_phase.dart';
 import 'pomodoro_timer_state.dart';
 
-typedef SessionCompletedCallback = void Function({
-  required PomodoroPhase phase,
-  required DateTime startTime,
-  required DateTime endTime,
-  required Duration duration,
-  required String taskName,
-});
+typedef SessionCompletedCallback =
+    void Function({
+      required PomodoroPhase phase,
+      required DateTime startTime,
+      required DateTime endTime,
+      required Duration duration,
+      required String taskName,
+    });
 
 class PomodoroEngine {
   final AppClock _clock;
@@ -23,13 +24,16 @@ class PomodoroEngine {
     required SettingsState settings,
     this.onSessionCompleted,
     this.onStateChanged,
-  })  : _clock = clock,
-        _settings = settings,
-        _state = PomodoroTimerState(
-          phase: PomodoroPhase.work,
-          totalDuration: Duration(minutes: settings.workDurationMinutes),
-          remainingDuration: Duration(minutes: settings.workDurationMinutes),
-        );
+    PomodoroTimerState? initialState,
+  }) : _clock = clock,
+       _settings = settings,
+       _state =
+           initialState ??
+           PomodoroTimerState(
+             phase: PomodoroPhase.work,
+             totalDuration: Duration(minutes: settings.workDurationMinutes),
+             remainingDuration: Duration(minutes: settings.workDurationMinutes),
+           );
 
   PomodoroTimerState get state => _state;
 
@@ -44,10 +48,12 @@ class PomodoroEngine {
         return Duration(minutes: _settings.workDurationMinutes.clamp(1, 1440));
       case PomodoroPhase.shortBreak:
         return Duration(
-            minutes: _settings.shortBreakDurationMinutes.clamp(1, 1440));
+          minutes: _settings.shortBreakDurationMinutes.clamp(1, 1440),
+        );
       case PomodoroPhase.longBreak:
         return Duration(
-            minutes: _settings.longBreakDurationMinutes.clamp(1, 1440));
+          minutes: _settings.longBreakDurationMinutes.clamp(1, 1440),
+        );
     }
   }
 
@@ -65,19 +71,23 @@ class PomodoroEngine {
       final total = getDurationForPhase(_state.phase);
       targetEnd = now.add(total);
       startTime = now;
-      _setState(_state.copyWith(
-        totalDuration: total,
-        remainingDuration: total,
-        sessionStartTime: startTime,
-      ));
+      _setState(
+        _state.copyWith(
+          totalDuration: total,
+          remainingDuration: total,
+          sessionStartTime: startTime,
+        ),
+      );
     }
 
-    _setState(_state.copyWith(
-      isRunning: true,
-      isPaused: false,
-      targetEndTime: targetEnd,
-      sessionStartTime: startTime,
-    ));
+    _setState(
+      _state.copyWith(
+        isRunning: true,
+        isPaused: false,
+        targetEndTime: targetEnd,
+        sessionStartTime: startTime,
+      ),
+    );
   }
 
   void pause() {
@@ -92,24 +102,28 @@ class PomodoroEngine {
 
     final safeRemaining = remaining.isNegative ? Duration.zero : remaining;
 
-    _setState(_state.copyWith(
-      isRunning: false,
-      isPaused: true,
-      remainingDuration: safeRemaining,
-      clearTargetEndTime: true,
-    ));
+    _setState(
+      _state.copyWith(
+        isRunning: false,
+        isPaused: true,
+        remainingDuration: safeRemaining,
+        clearTargetEndTime: true,
+      ),
+    );
   }
 
   void reset() {
     final defaultDuration = getDurationForPhase(_state.phase);
-    _setState(_state.copyWith(
-      isRunning: false,
-      isPaused: false,
-      totalDuration: defaultDuration,
-      remainingDuration: defaultDuration,
-      clearTargetEndTime: true,
-      clearSessionStartTime: true,
-    ));
+    _setState(
+      _state.copyWith(
+        isRunning: false,
+        isPaused: false,
+        totalDuration: defaultDuration,
+        remainingDuration: defaultDuration,
+        clearTargetEndTime: true,
+        clearSessionStartTime: true,
+      ),
+    );
   }
 
   void skip() {
@@ -124,10 +138,9 @@ class PomodoroEngine {
     _settings = newSettings;
     if (_state.isInitial) {
       final duration = getDurationForPhase(_state.phase);
-      _setState(_state.copyWith(
-        totalDuration: duration,
-        remainingDuration: duration,
-      ));
+      _setState(
+        _state.copyWith(totalDuration: duration, remainingDuration: duration),
+      );
     }
   }
 
@@ -139,9 +152,11 @@ class PomodoroEngine {
       _handlePhaseCompletion();
     }
     if (_state.isRunning) {
-      _setState(_state.copyWith(
-        remainingDuration: _state.targetEndTime!.difference(now),
-      ));
+      _setState(
+        _state.copyWith(
+          remainingDuration: _state.targetEndTime!.difference(now),
+        ),
+      );
     }
   }
 
@@ -167,7 +182,8 @@ class PomodoroEngine {
       newTotalCompleted++;
     }
 
-    final bool shouldTakeLongBreak = completedPhase == PomodoroPhase.work &&
+    final bool shouldTakeLongBreak =
+        completedPhase == PomodoroPhase.work &&
         newCompletedInCycle >= _settings.sessionsBeforeLongBreak;
 
     final PomodoroPhase nextPhase;
@@ -187,19 +203,21 @@ class PomodoroEngine {
         ? _settings.autoStartBreaks
         : _settings.autoStartPomodoros;
 
-    _setState(_state.copyWith(
-      phase: nextPhase,
-      totalDuration: nextDuration,
-      remainingDuration: nextDuration,
-      completedPomodorosInCycle: newCompletedInCycle,
-      totalCompletedPomodoros: newTotalCompleted,
-      isRunning: shouldAutoStart,
-      isPaused: false,
-      targetEndTime: shouldAutoStart ? endTime.add(nextDuration) : null,
-      clearTargetEndTime: !shouldAutoStart,
-      sessionStartTime: shouldAutoStart ? endTime : null,
-      clearSessionStartTime: !shouldAutoStart,
-    ));
+    _setState(
+      _state.copyWith(
+        phase: nextPhase,
+        totalDuration: nextDuration,
+        remainingDuration: nextDuration,
+        completedPomodorosInCycle: newCompletedInCycle,
+        totalCompletedPomodoros: newTotalCompleted,
+        isRunning: shouldAutoStart,
+        isPaused: false,
+        targetEndTime: shouldAutoStart ? endTime.add(nextDuration) : null,
+        clearTargetEndTime: !shouldAutoStart,
+        sessionStartTime: shouldAutoStart ? endTime : null,
+        clearSessionStartTime: !shouldAutoStart,
+      ),
+    );
   }
 
   void _transitionToNextPhase({required bool autoStartOverride}) {
@@ -210,16 +228,18 @@ class PomodoroEngine {
     final nextDuration = getDurationForPhase(nextPhase);
     final now = _clock.now();
 
-    _setState(_state.copyWith(
-      phase: nextPhase,
-      totalDuration: nextDuration,
-      remainingDuration: nextDuration,
-      isRunning: autoStartOverride,
-      isPaused: false,
-      targetEndTime: autoStartOverride ? now.add(nextDuration) : null,
-      clearTargetEndTime: !autoStartOverride,
-      sessionStartTime: autoStartOverride ? now : null,
-      clearSessionStartTime: !autoStartOverride,
-    ));
+    _setState(
+      _state.copyWith(
+        phase: nextPhase,
+        totalDuration: nextDuration,
+        remainingDuration: nextDuration,
+        isRunning: autoStartOverride,
+        isPaused: false,
+        targetEndTime: autoStartOverride ? now.add(nextDuration) : null,
+        clearTargetEndTime: !autoStartOverride,
+        sessionStartTime: autoStartOverride ? now : null,
+        clearSessionStartTime: !autoStartOverride,
+      ),
+    );
   }
 }

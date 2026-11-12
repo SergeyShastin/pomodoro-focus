@@ -1,3 +1,4 @@
+import '../../../core/updates/timer_update_handoff.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,6 +24,8 @@ class TimerNotifier extends StateNotifier<PomodoroTimerState> {
   final bool Function() _isDndEnabled;
   final bool Function()? _completionPending;
   bool? _focusActive;
+  bool _restartFrozen = false;
+  bool _historyWriteFailed = false;
   Timer? _ticker;
 
   TimerNotifier(
@@ -31,8 +34,8 @@ class TimerNotifier extends StateNotifier<PomodoroTimerState> {
     this._dndController,
     this._isDndEnabled, {
     bool Function()? completionPending,
-  })  : _completionPending = completionPending,
-        super(_engine.state) {
+  }) : _completionPending = completionPending,
+       super(_engine.state) {
     _trayService
       ..onStart = start
       ..onPause = pause
@@ -45,6 +48,7 @@ class TimerNotifier extends StateNotifier<PomodoroTimerState> {
 
   void _syncTicker() {
     _ticker?.cancel();
+    if (_restartFrozen) return;
     if (state.isRunning) {
       _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) {
         final previousPhase = state.phase;
@@ -62,6 +66,7 @@ class TimerNotifier extends StateNotifier<PomodoroTimerState> {
   }
 
   void start() {
+    if (_restartFrozen) return;
     _engine.start();
     state = _engine.state;
     _syncTicker();
@@ -71,6 +76,7 @@ class TimerNotifier extends StateNotifier<PomodoroTimerState> {
   }
 
   void pause() {
+    if (_restartFrozen) return;
     _engine.pause();
     state = _engine.state;
     _syncTicker();
@@ -79,6 +85,7 @@ class TimerNotifier extends StateNotifier<PomodoroTimerState> {
   }
 
   void skip() {
+    if (_restartFrozen) return;
     _engine.skip();
     state = _engine.state;
     _syncTicker();
@@ -87,6 +94,7 @@ class TimerNotifier extends StateNotifier<PomodoroTimerState> {
   }
 
   void reset() {
+    if (_restartFrozen) return;
     _engine.reset();
     state = _engine.state;
     _syncTicker();
@@ -95,6 +103,7 @@ class TimerNotifier extends StateNotifier<PomodoroTimerState> {
   }
 
   void setTaskName(String name) {
+    if (_restartFrozen) return;
     _engine.setTaskName(name);
     state = _engine.state;
   }
@@ -116,6 +125,32 @@ class TimerNotifier extends StateNotifier<PomodoroTimerState> {
     } else {
       _dndController.disable();
     }
+  }
+
+  bool get canRestartForUpdate =>
+      mounted &&
+      !_restartFrozen &&
+      !_historyWriteFailed &&
+      !(_completionPending?.call() ?? false) &&
+      TimerUpdateHandoff.isSafe(state);
+
+  PomodoroTimerState freezeForUpdateRestart() {
+    if (!canRestartForUpdate) {
+      throw StateError('Focus or history write in progress');
+    }
+    _restartFrozen = true;
+    _ticker?.cancel();
+    return state;
+  }
+
+  void cancelUpdateRestart() {
+    _restartFrozen = false;
+    _syncTicker();
+    synchronizeFocus();
+  }
+
+  void blockUpdateRestartForHistoryError() {
+    _historyWriteFailed = true;
   }
 
   bool get isOnBreak => mounted && state.phase.isBreak;
@@ -140,8 +175,9 @@ class TimerNotifier extends StateNotifier<PomodoroTimerState> {
   }
 }
 
-final pomodoroNotifierProvider =
-    StateNotifierProvider<TimerNotifier, PomodoroTimerState>((ref) {
+final pomodoroNotifierProvider = StateNotifierProvider<TimerNotifier, PomodoroTimerState>((
+  ref,
+) {
   final clock = ref.watch(clockProvider);
   final settings = ref.read(settingsProvider);
   final audioService = ref.watch(audioServiceProvider);
@@ -159,82 +195,93 @@ final pomodoroNotifierProvider =
   final engine = PomodoroEngine(
     clock: clock,
     settings: settings,
-    onSessionCompleted: ({
-      required phase,
-      required startTime,
-      required endTime,
-      required duration,
-      required taskName,
-    }) {
-      pendingCompletions++;
-      final settings = ref.read(settingsProvider);
+    initialState: TimerUpdateHandoff.take(
+      ref.read(sharedPreferencesProvider),
+      clock.now(),
+    ),
+    onSessionCompleted:
+        ({
+          required phase,
+          required startTime,
+          required endTime,
+          required duration,
+          required taskName,
+        }) {
+          pendingCompletions++;
+          final settings = ref.read(settingsProvider);
 
-      completionEffects = completionEffects.then((_) async {
-        try {
-          await dndController.disable();
-
-          // Wake before the completion alert, including when the next work
-          // session waits for a manual start. Do not replay old wake requests.
-          if (phase.isBreak &&
-              pendingCompletions == 1 &&
-              notifier.isInWorkPhase &&
-              (screenTurnedOffForBreak || settings.turnOffScreenOnBreak)) {
+          completionEffects = completionEffects.then((_) async {
             try {
-              await screenPower.turnOn();
-              screenTurnedOffForBreak = false;
-            } catch (error) {
-              debugPrint('Display wake request failed: $error');
+              await dndController.disable();
+
+              // Wake before the completion alert, including when the next work
+              // session waits for a manual start. Do not replay old wake requests.
+              if (phase.isBreak &&
+                  pendingCompletions == 1 &&
+                  notifier.isInWorkPhase &&
+                  (screenTurnedOffForBreak || settings.turnOffScreenOnBreak)) {
+                try {
+                  await screenPower.turnOn();
+                  screenTurnedOffForBreak = false;
+                } catch (error) {
+                  debugPrint('Display wake request failed: $error');
+                }
+              }
+
+              if (phase.isWork) {
+                try {
+                  await statsRepo.recordSession(
+                    phase: phase,
+                    startTime: startTime,
+                    endTime: endTime,
+                    duration: duration,
+                    taskName: taskName,
+                  );
+                } catch (_) {
+                  notifier.blockUpdateRestartForHistoryError();
+                  rethrow;
+                }
+              }
+
+              if (settings.enableSound) {
+                await audioService.playCompletionSound();
+              }
+              if (settings.enableNotifications) {
+                final title = phase.isWork
+                    ? 'Focus session completed!'
+                    : 'Break completed!';
+                final body = phase.isWork
+                    ? (taskName.isNotEmpty
+                          ? 'Task: $taskName. Great job!'
+                          : 'Great job! Time for a break.')
+                    : 'Time to get back to focus.';
+
+                await notificationService.showNotification(
+                  title: title,
+                  body: body,
+                );
+              }
+            } catch (error, stack) {
+              debugPrint('Session completion failed: $error\n$stack');
+            } finally {
+              try {
+                // Ignore old completions replayed after sleep, or a break already skipped.
+                // This is one request per completed pomodoro, never a repeating blackout.
+                if (phase.isWork &&
+                    pendingCompletions == 1 &&
+                    notifier.isOnBreak &&
+                    ref.read(settingsProvider).turnOffScreenOnBreak) {
+                  await screenPower.turnOff();
+                  screenTurnedOffForBreak = true;
+                }
+              } catch (error) {
+                debugPrint('Display power request failed: $error');
+              }
+              pendingCompletions--;
+              notifier.completionFinished();
             }
-          }
-
-          if (phase.isWork) {
-            await statsRepo.recordSession(
-              phase: phase,
-              startTime: startTime,
-              endTime: endTime,
-              duration: duration,
-              taskName: taskName,
-            );
-          }
-
-          if (settings.enableSound) {
-            await audioService.playCompletionSound();
-          }
-          if (settings.enableNotifications) {
-            final title =
-                phase.isWork ? 'Focus session completed!' : 'Break completed!';
-            final body = phase.isWork
-                ? (taskName.isNotEmpty
-                    ? 'Task: $taskName. Great job!'
-                    : 'Great job! Time for a break.')
-                : 'Time to get back to focus.';
-
-            await notificationService.showNotification(
-              title: title,
-              body: body,
-            );
-          }
-        } catch (error, stack) {
-          debugPrint('Session completion failed: $error\n$stack');
-        } finally {
-          try {
-            // Ignore old completions replayed after sleep, or a break already skipped.
-            // This is one request per completed pomodoro, never a repeating blackout.
-            if (phase.isWork &&
-                pendingCompletions == 1 &&
-                notifier.isOnBreak &&
-                ref.read(settingsProvider).turnOffScreenOnBreak) {
-              await screenPower.turnOff();
-              screenTurnedOffForBreak = true;
-            }
-          } catch (error) {
-            debugPrint('Display power request failed: $error');
-          }
-          pendingCompletions--;
-          notifier.completionFinished();
-        }
-      });
-    },
+          });
+        },
   );
 
   notifier = TimerNotifier(

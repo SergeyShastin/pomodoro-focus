@@ -6,11 +6,22 @@ import 'package:pomodoro_focus/core/updates/update_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Backend implements UpdateBackend {
+  bool installed = false;
+  bool verificationFails = false;
+  Completer<void>? installation;
+  @override
+  Future<bool> isInstalled(String version) async =>
+      installed && !verificationFails;
   int checks = 0, downloads = 0, opens = 0;
   bool corrupt = false, cannotOpen = false;
   Completer<ReleaseUpdate?>? pending;
-  final release =
-      ReleaseUpdate('2.0.0', 'test.deb', Uri.https('github.com'), 10, 'hash');
+  final release = ReleaseUpdate(
+    '2.0.0',
+    'test.deb',
+    Uri.https('github.com'),
+    10,
+    'hash',
+  );
   @override
   Future<String> currentVersion() async => '1.1.0';
   @override
@@ -22,7 +33,9 @@ class Backend implements UpdateBackend {
 
   @override
   Future<File> download(
-      ReleaseUpdate update, void Function(double) progress) async {
+    ReleaseUpdate update,
+    void Function(double) progress,
+  ) async {
     downloads++;
     progress(0.5);
     if (corrupt) throw const UpdateException(UpdateFailure.integrity);
@@ -30,9 +43,11 @@ class Backend implements UpdateBackend {
   }
 
   @override
-  Future<void> openInstaller(File file) async {
+  Future<void> installPackage(File file) async {
     opens++;
-    if (cannotOpen) throw const UpdateException(UpdateFailure.installer);
+    await installation?.future;
+    if (cannotOpen) throw const UpdateException(UpdateFailure.installation);
+    installed = true;
   }
 }
 
@@ -48,51 +63,111 @@ void main() {
     controller = UpdateController(backend, prefs);
   });
   tearDown(() => controller.dispose());
-  test('manual check works with automatic checks disabled; does not download',
-      () async {
-    controller.configure(false);
-    await controller.check();
-    expect(controller.state.phase, UpdatePhase.available);
-    expect([backend.checks, backend.downloads, backend.opens], [1, 0, 0]);
-    await controller.install();
-    expect(controller.state.phase, UpdatePhase.opened);
-    expect([backend.downloads, backend.opens], [1, 1]);
-  });
   test(
-      'corrupt download never opens installer; opening failure can retry cached package',
-      () async {
-    await controller.check();
-    backend.corrupt = true;
-    await controller.install();
-    expect(controller.state.failure, UpdateFailure.integrity);
-    expect(backend.opens, 0);
-    backend.corrupt = false;
-    backend.cannotOpen = true;
-    await controller.install();
-    expect(controller.state.failure, UpdateFailure.installer);
-    backend.cannotOpen = false;
-    await controller.install();
-    expect(backend.downloads, 2);
-    expect(controller.state.phase, UpdatePhase.opened);
-  });
-  test('check is single-flight; disabling auto discards its pending result',
-      () async {
-    controller.configure(true);
-    backend.pending = Completer();
-    final first = controller.check(automatic: true);
-    await Future<void>.delayed(Duration.zero);
-    await controller.check();
-    expect(backend.checks, 1);
-    controller.configure(false);
-    backend.pending!.complete(backend.release);
-    await first;
-    expect(controller.state.release, isNull);
-    expect(prefs.getInt('update_last_attempt'), isNotNull);
-  });
-  testWidgets('automatic polling respects persisted interval and opt out',
-      (tester) async {
+    'no restart until installation finishes and its package is verified',
+    () async {
+      controller.dispose();
+      var restarted = false;
+      controller = UpdateController(
+        backend,
+        prefs,
+        afterInstalled: (onRestart) async {
+          restarted = true;
+          onRestart();
+        },
+      );
+      await controller.check();
+      backend.installation = Completer<void>();
+      backend.verificationFails = true;
+      final action = controller.install();
+      await Future<void>.delayed(Duration.zero);
+      expect(controller.state.phase, UpdatePhase.installing);
+      expect(restarted, isFalse);
+      backend.installation!.complete();
+      await action;
+      expect(controller.state.failure, UpdateFailure.installation);
+      expect(restarted, isFalse);
+      backend.verificationFails = false;
+      await controller.install();
+      expect(restarted, isTrue);
+      expect(backend.opens, 1);
+    },
+  );
+  test(
+    'installed package retries restart without another installation',
+    () async {
+      var restarts = 0;
+      controller.dispose();
+      controller = UpdateController(
+        backend,
+        prefs,
+        afterInstalled: (onRestart) async {
+          restarts++;
+          if (restarts == 1) throw StateError('restart failed');
+          onRestart();
+        },
+      );
+      await controller.check();
+      await controller.install();
+      expect(controller.state.failure, UpdateFailure.restart);
+      await controller.install();
+      expect([backend.downloads, backend.opens, restarts], [1, 1, 2]);
+      expect(controller.state.phase, UpdatePhase.restarting);
+    },
+  );
+  test(
+    'manual check works with automatic checks disabled; does not download',
+    () async {
+      controller.configure(false);
+      await controller.check();
+      expect(controller.state.phase, UpdatePhase.available);
+      expect([backend.checks, backend.downloads, backend.opens], [1, 0, 0]);
+      await controller.install();
+      expect(controller.state.phase, UpdatePhase.restarting);
+      expect([backend.downloads, backend.opens], [1, 1]);
+    },
+  );
+  test(
+    'corrupt download never opens installer; opening failure can retry cached package',
+    () async {
+      await controller.check();
+      backend.corrupt = true;
+      await controller.install();
+      expect(controller.state.failure, UpdateFailure.integrity);
+      expect(backend.opens, 0);
+      backend.corrupt = false;
+      backend.cannotOpen = true;
+      await controller.install();
+      expect(controller.state.failure, UpdateFailure.installation);
+      backend.cannotOpen = false;
+      await controller.install();
+      expect(backend.downloads, 2);
+      expect(controller.state.phase, UpdatePhase.restarting);
+    },
+  );
+  test(
+    'check is single-flight; disabling auto discards its pending result',
+    () async {
+      controller.configure(true);
+      backend.pending = Completer();
+      final first = controller.check(automatic: true);
+      await Future<void>.delayed(Duration.zero);
+      await controller.check();
+      expect(backend.checks, 1);
+      controller.configure(false);
+      backend.pending!.complete(backend.release);
+      await first;
+      expect(controller.state.release, isNull);
+      expect(prefs.getInt('update_last_attempt'), isNotNull);
+    },
+  );
+  testWidgets('automatic polling respects persisted interval and opt out', (
+    tester,
+  ) async {
     await prefs.setInt(
-        'update_last_attempt', DateTime.now().millisecondsSinceEpoch);
+      'update_last_attempt',
+      DateTime.now().millisecondsSinceEpoch,
+    );
     controller.configure(true);
     await tester.pump(const Duration(minutes: 1));
     expect(backend.checks, 0);
