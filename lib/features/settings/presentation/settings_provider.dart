@@ -73,6 +73,9 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
   Future<void> setFontScale(double value) =>
       updateSettings((s) => s.copyWith(fontScale: value.clamp(1.0, 1.5)));
 
+  Future<void> setAutomaticUpdates(bool value) =>
+      updateSettings((s) => s.copyWith(automaticUpdates: value));
+
   Future<void> setEnableSound(bool value) =>
       updateSettings((s) => s.copyWith(enableSound: value));
 }

@@ -10,7 +10,9 @@ void main() {
   testWidgets(
       'TimerScreen: start, pause, resume, skip and task input interactions',
       (WidgetTester tester) async {
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues({
+      'automatic_updates': false,
+    });
     final prefs = await SharedPreferences.getInstance();
 
     tester.view.physicalSize = const Size(800, 1000);

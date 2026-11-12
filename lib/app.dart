@@ -1,3 +1,4 @@
+import 'core/updates/update_widgets.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,6 +53,8 @@ class PomodoroApp extends ConsumerWidget {
 
         return MaterialApp(
           title: 'Pomodoro Focus',
+          builder: (context, child) =>
+              UpdateHost(compact: isMiniMode, child: child!),
           debugShowCheckedModeBanner: false,
           theme: lightTheme,
           darkTheme: darkTheme,

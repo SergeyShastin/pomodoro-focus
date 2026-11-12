@@ -1,3 +1,4 @@
+import '../../../core/updates/update_widgets.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -253,6 +254,7 @@ class SettingsScreen extends ConsumerWidget {
               value: settings.minimizeToTrayOnClose,
               onChanged: notifier.setMinimizeToTrayOnClose,
             ),
+          const UpdatesSettingsCard(),
           const SizedBox(height: 24),
         ],
       ),

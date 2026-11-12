@@ -317,4 +317,64 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onePomodoroReward => '+1 pomodoro';
+
+  @override
+  String get updatesTitle => 'Application updates';
+
+  @override
+  String get automaticUpdates => 'Check for updates automatically';
+
+  @override
+  String get updatesDescription =>
+      'Check GitHub Releases at startup and every 12 hours. Only version requests are sent; no tasks, history or settings. Downloads start only when you choose Update.';
+
+  @override
+  String get updatesChecking => 'Checking for updates…';
+
+  @override
+  String get updatesCurrent => 'You are up to date.';
+
+  @override
+  String updateAvailable(String version) {
+    return 'Version $version is available';
+  }
+
+  @override
+  String updateDownloading(int percent) {
+    return 'Downloading: $percent%';
+  }
+
+  @override
+  String get updateAction => 'Update';
+
+  @override
+  String get checkUpdates => 'Check now';
+
+  @override
+  String get updateInstallerOpened =>
+      'Installer opened. Finish installation, then quit and restart the app. An unfinished timer will not be restored.';
+
+  @override
+  String get updateUnsupported =>
+      'Automatic .deb updates require Ubuntu/Kubuntu 26.04 or newer on x86_64.';
+
+  @override
+  String get updatePackageMissing =>
+      'The release has no compatible .deb package yet. Try again later.';
+
+  @override
+  String get updateIntegrityError =>
+      'The package could not be verified. It was not opened. Try checking again.';
+
+  @override
+  String get updateInstallerError =>
+      'Could not open the system installer. Install a graphical .deb installer and retry.';
+
+  @override
+  String get updateNetworkError =>
+      'Could not contact GitHub or download the update. Check your connection and try again.';
+
+  @override
+  String get updateNotificationBody =>
+      'Open the app to download the update and launch the system installer.';
 }

@@ -62,7 +62,7 @@ import 'app_localizations_en.dart';
 /// property.
 abstract class AppLocalizations {
   AppLocalizations(String locale)
-      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -85,11 +85,11 @@ abstract class AppLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en')];
@@ -639,6 +639,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'+1 pomodoro'**
   String get onePomodoroReward;
+
+  /// No description provided for @updatesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Application updates'**
+  String get updatesTitle;
+
+  /// No description provided for @automaticUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Check for updates automatically'**
+  String get automaticUpdates;
+
+  /// No description provided for @updatesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Check GitHub Releases at startup and every 12 hours. Only version requests are sent; no tasks, history or settings. Downloads start only when you choose Update.'**
+  String get updatesDescription;
+
+  /// No description provided for @updatesChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking for updates…'**
+  String get updatesChecking;
+
+  /// No description provided for @updatesCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'You are up to date.'**
+  String get updatesCurrent;
+
+  /// No description provided for @updateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version} is available'**
+  String updateAvailable(String version);
+
+  /// No description provided for @updateDownloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading: {percent}%'**
+  String updateDownloading(int percent);
+
+  /// No description provided for @updateAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get updateAction;
+
+  /// No description provided for @checkUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Check now'**
+  String get checkUpdates;
+
+  /// No description provided for @updateInstallerOpened.
+  ///
+  /// In en, this message translates to:
+  /// **'Installer opened. Finish installation, then quit and restart the app. An unfinished timer will not be restored.'**
+  String get updateInstallerOpened;
+
+  /// No description provided for @updateUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic .deb updates require Ubuntu/Kubuntu 26.04 or newer on x86_64.'**
+  String get updateUnsupported;
+
+  /// No description provided for @updatePackageMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'The release has no compatible .deb package yet. Try again later.'**
+  String get updatePackageMissing;
+
+  /// No description provided for @updateIntegrityError.
+  ///
+  /// In en, this message translates to:
+  /// **'The package could not be verified. It was not opened. Try checking again.'**
+  String get updateIntegrityError;
+
+  /// No description provided for @updateInstallerError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the system installer. Install a graphical .deb installer and retry.'**
+  String get updateInstallerError;
+
+  /// No description provided for @updateNetworkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not contact GitHub or download the update. Check your connection and try again.'**
+  String get updateNetworkError;
+
+  /// No description provided for @updateNotificationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the app to download the update and launch the system installer.'**
+  String get updateNotificationBody;
 }
 
 class _AppLocalizationsDelegate
@@ -666,8 +762,9 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-      'an issue with the localizations generation tool. Please file an issue '
-      'on GitHub with a reproducible sample app and the gen-l10n configuration '
-      'that was used.');
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
 }

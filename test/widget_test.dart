@@ -10,7 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   testWidgets('App skeleton smoke test: verifies navigation bar and tabs',
       (WidgetTester tester) async {
-    SharedPreferences.setMockInitialValues({'locale_code': 'ru'});
+    SharedPreferences.setMockInitialValues(
+        {'automatic_updates': false, 'locale_code': 'ru'});
     tester.platformDispatcher.localeTestValue = const Locale('ru');
     addTearDown(tester.platformDispatcher.clearLocaleTestValue);
     final prefs = await SharedPreferences.getInstance();

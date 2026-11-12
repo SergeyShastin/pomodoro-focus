@@ -10,6 +10,7 @@ class SettingsState {
   final bool enableDndDuringWork;
   final bool enableNotifications;
   final bool enableSound;
+  final bool automaticUpdates;
   final bool turnOffScreenOnBreak;
   final bool minimizeToTrayOnClose;
   final AppThemeMode themeMode;
@@ -29,6 +30,7 @@ class SettingsState {
     this.enableDndDuringWork = true,
     this.enableNotifications = true,
     this.enableSound = true,
+    this.automaticUpdates = true,
     this.turnOffScreenOnBreak = false,
     this.minimizeToTrayOnClose = true,
     this.themeMode = AppThemeMode.system,
@@ -49,6 +51,7 @@ class SettingsState {
     bool? enableDndDuringWork,
     bool? enableNotifications,
     bool? enableSound,
+    bool? automaticUpdates,
     bool? turnOffScreenOnBreak,
     bool? minimizeToTrayOnClose,
     AppThemeMode? themeMode,
@@ -71,6 +74,7 @@ class SettingsState {
       enableDndDuringWork: enableDndDuringWork ?? this.enableDndDuringWork,
       enableNotifications: enableNotifications ?? this.enableNotifications,
       enableSound: enableSound ?? this.enableSound,
+      automaticUpdates: automaticUpdates ?? this.automaticUpdates,
       turnOffScreenOnBreak: turnOffScreenOnBreak ?? this.turnOffScreenOnBreak,
       minimizeToTrayOnClose:
           minimizeToTrayOnClose ?? this.minimizeToTrayOnClose,

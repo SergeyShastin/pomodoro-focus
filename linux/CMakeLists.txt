@@ -41,6 +41,9 @@ endif()
 # of modifying this function.
 function(APPLY_STANDARD_SETTINGS TARGET)
   target_compile_features(${TARGET} PUBLIC cxx_std_14)
+  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang" AND DEFINED ENV{HOME})
+    target_compile_options(${TARGET} PRIVATE "-ffile-prefix-map=$ENV{HOME}=/build")
+  endif()
   target_compile_options(${TARGET} PRIVATE -Wall -Werror)
   target_compile_options(${TARGET} PRIVATE "$<$<NOT:$<CONFIG:Debug>>:-O3>")
   target_compile_definitions(${TARGET} PRIVATE "$<$<NOT:$<CONFIG:Debug>>:NDEBUG>")
@@ -73,6 +76,16 @@ set_target_properties(${BINARY_NAME}
 # Generated plugin build rules, which manage building the plugins and adding
 # them to the application.
 include(flutter/generated_plugins.cmake)
+
+# Plugin libraries are copied from their build targets into bundle/lib.
+# Use the colocated Flutter runtime, never the developer's ephemeral directory.
+foreach(plugin ${FLUTTER_PLUGIN_LIST})
+  if(TARGET ${plugin}_plugin)
+    set_target_properties(${plugin}_plugin PROPERTIES
+      BUILD_WITH_INSTALL_RPATH TRUE
+      INSTALL_RPATH "$ORIGIN")
+  endif()
+endforeach()
 
 # Ayatana marks the legacy AppIndicator API used by tray_manager as deprecated.
 # Keep the diagnostic visible without making it fatal for this plugin only.

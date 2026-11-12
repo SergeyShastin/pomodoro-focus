@@ -91,7 +91,8 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
-      SharedPreferences.setMockInitialValues({'font_scale': scenario.scale});
+      SharedPreferences.setMockInitialValues(
+          {'automatic_updates': false, 'font_scale': scenario.scale});
       final prefs = await SharedPreferences.getInstance();
       final repaint = GlobalKey();
       final summary = sampleSummary();
@@ -208,7 +209,8 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    SharedPreferences.setMockInitialValues({'font_scale': 1.5});
+    SharedPreferences.setMockInitialValues(
+        {'automatic_updates': false, 'font_scale': 1.5});
     final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(ProviderScope(
         overrides: [

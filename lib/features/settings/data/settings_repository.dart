@@ -38,6 +38,7 @@ class SettingsRepository {
       autoStartPomodoros: _prefs.getBool(_keyAutoStartPomodoros) ?? false,
       enableDndDuringWork: _prefs.getBool(_keyEnableDnd) ?? true,
       enableNotifications: _prefs.getBool(_keyEnableNotifications) ?? true,
+      automaticUpdates: _prefs.getBool('automatic_updates') ?? true,
       enableSound: _prefs.getBool(_keyEnableSound) ?? true,
       turnOffScreenOnBreak: _prefs.getBool(_keyTurnOffScreenOnBreak) ?? false,
       minimizeToTrayOnClose: _prefs.getBool('minimize_to_tray') ?? true,
@@ -54,6 +55,7 @@ class SettingsRepository {
 
   Future<void> saveSettings(SettingsState settings) async {
     await Future.wait([
+      _prefs.setBool('automatic_updates', settings.automaticUpdates),
       _prefs.setInt(_keyWorkDuration, settings.workDurationMinutes),
       _prefs.setInt(_keyShortBreakDuration, settings.shortBreakDurationMinutes),
       _prefs.setInt(_keyLongBreakDuration, settings.longBreakDurationMinutes),

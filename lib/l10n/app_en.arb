@@ -5,11 +5,9 @@
   "worldClockTab": "World Clock",
   "statsTab": "Statistics",
   "settingsTab": "Settings",
-
   "focusPhase": "Focus",
   "shortBreakPhase": "Short Break",
   "longBreakPhase": "Long Break",
-
   "start": "Start",
   "pause": "Pause",
   "resume": "Resume",
@@ -20,14 +18,16 @@
   "roundIndicator": "Session {current} of {total}",
   "@roundIndicator": {
     "placeholders": {
-      "current": { "type": "int" },
-      "total": { "type": "int" }
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
-
   "sessionCompleted": "Focus session completed!",
   "breakCompleted": "Break completed! Time to focus.",
-
   "worldClockTitle": "World Clock",
   "localTime": "Your Time",
   "searchCityHint": "Search city or timezone...",
@@ -38,17 +38,20 @@
   "aheadOfLocal": "{hours}h ahead",
   "@aheadOfLocal": {
     "placeholders": {
-      "hours": { "type": "int" }
+      "hours": {
+        "type": "int"
+      }
     }
   },
   "behindLocal": "{hours}h behind",
   "@behindLocal": {
     "placeholders": {
-      "hours": { "type": "int" }
+      "hours": {
+        "type": "int"
+      }
     }
   },
   "sameTime": "Same time",
-
   "statsTitle": "Focus Statistics",
   "todayFocus": "Today",
   "weekFocus": "This Week",
@@ -57,46 +60,50 @@
   "focusChartTitle": "Daily Focus",
   "sessionHistoryTitle": "Session History",
   "noSessionsYet": "No focus sessions recorded yet.",
-
   "settingsTitle": "Settings",
   "timerSettings": "Timer Durations",
   "workDurationMinutes": "Focus Duration: {minutes} min",
   "@workDurationMinutes": {
     "placeholders": {
-      "minutes": { "type": "int" }
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "shortBreakDurationMinutes": "Short Break: {minutes} min",
   "@shortBreakDurationMinutes": {
     "placeholders": {
-      "minutes": { "type": "int" }
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "longBreakDurationMinutes": "Long Break: {minutes} min",
   "@longBreakDurationMinutes": {
     "placeholders": {
-      "minutes": { "type": "int" }
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "sessionsBeforeLongBreak": "Sessions before long break: {count}",
   "@sessionsBeforeLongBreak": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "autoStartBreaks": "Auto-start breaks",
   "autoStartPomodoros": "Auto-start next pomodoro",
-
   "dndSettings": "Do Not Disturb",
   "enableDndDuringWork": "Enable DND during focus sessions",
   "dndKdeDescription": "Mutes desktop notifications via KDE Plasma D-Bus",
   "dndAndroidPermissionNeeded": "Notification Policy Access is required on Android to toggle DND.",
   "grantPermission": "Grant Permission",
-
   "soundAndNotifications": "Sound & Notifications",
   "enableNotifications": "System notifications",
   "enableSound": "Sound effects",
-
   "appearanceSettings": "Appearance",
   "themeMode": "Theme",
   "themeSystem": "System default",
@@ -105,7 +112,6 @@
   "themeOled": "OLED Pure Black (#000000)",
   "dynamicColor": "Dynamic system accent color",
   "accentColor": "Accent Color",
-
   "miniTimer": "Mini Timer",
   "returnToFullWindow": "Expand Window",
   "minimizeToTrayOnClose": "Minimize to tray when closing the window",
@@ -181,5 +187,35 @@
       }
     }
   },
-  "onePomodoroReward": "+1 pomodoro"
+  "onePomodoroReward": "+1 pomodoro",
+  "updatesTitle": "Application updates",
+  "automaticUpdates": "Check for updates automatically",
+  "updatesDescription": "Check GitHub Releases at startup and every 12 hours. Only version requests are sent; no tasks, history or settings. Downloads start only when you choose Update.",
+  "updatesChecking": "Checking for updates…",
+  "updatesCurrent": "You are up to date.",
+  "updateAvailable": "Version {version} is available",
+  "updateDownloading": "Downloading: {percent}%",
+  "updateAction": "Update",
+  "checkUpdates": "Check now",
+  "updateInstallerOpened": "Installer opened. Finish installation, then quit and restart the app. An unfinished timer will not be restored.",
+  "updateUnsupported": "Automatic .deb updates require Ubuntu/Kubuntu 26.04 or newer on x86_64.",
+  "updatePackageMissing": "The release has no compatible .deb package yet. Try again later.",
+  "updateIntegrityError": "The package could not be verified. It was not opened. Try checking again.",
+  "updateInstallerError": "Could not open the system installer. Install a graphical .deb installer and retry.",
+  "updateNetworkError": "Could not contact GitHub or download the update. Check your connection and try again.",
+  "updateNotificationBody": "Open the app to download the update and launch the system installer.",
+  "@updateAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@updateDownloading": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  }
 }

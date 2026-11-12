@@ -4,6 +4,7 @@ import argparse
 from datetime import datetime, timezone
 import gzip
 import hashlib
+import json
 import os
 from pathlib import Path
 import re
@@ -19,17 +20,24 @@ PACKAGE = 'pomodoro-focus'
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--bundle', required=True, type=Path)
-    parser.add_argument('--version', default='1.0.0-1')
+    parser.add_argument('--version', help='Debian version; defaults to the bundle version plus -1')
     parser.add_argument('--output', type=Path, default=Path('dist'))
     parser.add_argument('--license-file', type=Path,
                         default=Path(__file__).resolve().parents[1] / 'LICENSE')
     parser.add_argument('--flutter-license-file', type=Path)
     args = parser.parse_args()
-    if not re.fullmatch(r'[0-9][A-Za-z0-9.+~\-]*', args.version):
-        parser.error('Invalid Debian version')
     if not shutil.which('dpkg-deb'):
         parser.error('dpkg-deb is required (package: dpkg)')
     bundle = args.bundle.resolve()
+    try:
+        app_version = json.loads((bundle / 'data/flutter_assets/version.json').read_text())['version']
+    except (OSError, ValueError, KeyError):
+        parser.error('Cannot read the bundle app version; build a release bundle first')
+    if not isinstance(app_version, str) or not re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+', app_version):
+        parser.error('A stable three-part app version is required')
+    args.version = args.version or app_version + '-1'
+    if not re.fullmatch(re.escape(app_version) + r'-[0-9]+', args.version):
+        parser.error('Debian version must match the bundle app version, followed by -<revision>')
     license_file = args.license_file.resolve()
     flutter_license = args.flutter_license_file or bundle.parent / 'FLUTTER_LICENSE'
     if not flutter_license.is_file() and args.flutter_license_file is None:
@@ -59,6 +67,10 @@ def main():
             target = source.resolve()
             if not target.is_relative_to(bundle):
                 parser.error(f'External bundle symlink: {source}')
+    for source in [bundle / 'pomodoro_focus', *(bundle / 'lib').glob('*.so*')]:
+        data = source.read_bytes()
+        if b'/home/' in data or b'/Users/' in data:
+            parser.error(f'Native library contains a local build path: {source.name}; rebuild with the current CMake settings')
     output = args.output.resolve()
     if output.is_relative_to(bundle):
         parser.error('Output directory must be outside the bundle')
@@ -114,7 +126,7 @@ Priority: optional
 Architecture: amd64
 Maintainer: Pomodoro Focus Contributors <contributors@example.invalid>
 Installed-Size: {installed_size}
-Depends: libc6 (>= 2.43), libstdc++6 (>= 11), libgtk-3-0t64, libayatana-appindicator3-1, libgstreamer1.0-0, libgstreamer-plugins-base1.0-0, gstreamer1.0-plugins-good, libsqlite3-0
+Depends: libc6 (>= 2.43), libstdc++6 (>= 11), libgtk-3-0t64, libayatana-appindicator3-1, libgstreamer1.0-0, libgstreamer-plugins-base1.0-0, gstreamer1.0-plugins-good, libsqlite3-0, xdg-utils
 Suggests: libkscreen-bin, xwayland
 Homepage: https://github.com/SergeyShastin/pomodoro-focus
 Description: Offline Pomodoro timer and world clock

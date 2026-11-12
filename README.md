@@ -16,7 +16,7 @@ Android, Windows, macOS and iOS folders are experimental; development and verifi
 - Tray controls, close to tray, a compact always-on-top timer and saved window geometry.
 - Light, dark, pure-black OLED and system themes, dynamic colors where supported, an English interface and adjustable text size (100–150%, default 120%).
 
-No analytics, advertising or application network requests. Development tools and dependency builds may need internet access.
+No analytics or advertising. Timer, clocks and history work offline. Optional automatic update checks (enabled by default) request public GitHub Releases metadata at startup and at most every 12 hours; disable them in Settings to keep the app offline. Packages download only after you press Update. No tasks, history or settings are uploaded.
 
 ## Screenshots
 
@@ -29,7 +29,7 @@ These screenshots use **synthetic demonstration data**, not a user's session his
 
 Download the `.deb` from [Releases](https://github.com/SergeyShastin/pomodoro-focus/releases/latest) and open it with your graphical package installer. It installs runtime dependencies and adds the app to your application menu. The package targets **Ubuntu/Kubuntu 26.04 amd64**; Flutter is not needed.
 
-The portable Linux x86_64 archive is also available. See the [installation guide](docs/LINUX_INSTALL.md) for both methods, checksums, migration from a user-local installation and removal. Automatic update checks and an APT update repository are not implemented yet.
+The portable Linux x86_64 archive is also available. See the [installation guide](docs/LINUX_INSTALL.md) for both methods, checksums, migration from a user-local installation and removal. Version 1.1.0 adds optional GitHub Releases checks and a button to download a verified `.deb` and open the system installer. An APT repository is not configured.
 
 ## Build on Linux
 
