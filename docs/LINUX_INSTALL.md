@@ -77,4 +77,6 @@ Adjust paths if you use XDG overrides or a custom installation prefix. This leav
 
 ## Licenses
 
-The application is licensed under [MIT](../LICENSE), including v1.0.0. Download the `LICENSE` attachment alongside the v1.0.0 archive: the original archive predates this license addition and its embedded installation guide contains the earlier license status. The binary archive and its checksum are unchanged. Dependency notices in `THIRD_PARTY_NOTICES.txt` and `FLUTTER_LICENSE` retain their respective terms.
+The application is licensed under [MIT](../LICENSE), including v1.0.0. The release archive includes `LICENSE` next to this installation guide, along with dependency notices in `THIRD_PARTY_NOTICES.txt` and the Flutter license in `FLUTTER_LICENSE`. Dependencies retain their respective license terms.
+
+The v1.0.0 archive was repackaged to include the MIT license and this updated guide. Application binaries are unchanged. Download the current archive and its matching `SHA256SUMS` together; the checksum of an earlier download will differ.
