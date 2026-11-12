@@ -2,7 +2,7 @@ name: pomodoro_focus
 description: "Cross-platform Pomodoro Focus Timer and World Clock"
 publish_to: 'none'
 
-version: 1.1.0+2
+version: 1.1.1+3
 
 environment:
   sdk: '>=3.10.0 <4.0.0'

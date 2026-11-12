@@ -5,12 +5,12 @@ KDE Plasma 6 is the primary desktop. Other distributions and older Ubuntu releas
 
 ## Recommended: graphical installation with .deb
 
-Download `pomodoro-focus_1.1.0-1_amd64.deb` from the [v1.1.0 release](https://github.com/SergeyShastin/pomodoro-focus/releases/tag/v1.1.0). Open the downloaded file with your graphical package installer (Discover or another installer that supports local Debian packages) and choose Install. Your system may request administrator authentication. The package manager installs runtime dependencies and adds **Focus & World Clock** to the application menu. Flutter is not required.
+Download `pomodoro-focus_1.1.1-1_amd64.deb` from the [v1.1.1 release](https://github.com/SergeyShastin/pomodoro-focus/releases/tag/v1.1.1). Open the downloaded file with your graphical package installer (Discover or another installer that supports local Debian packages) and choose Install. Your system may request administrator authentication. The package manager installs runtime dependencies and adds **Focus & World Clock** to the application menu. Flutter is not required.
 
 This package targets **Ubuntu/Kubuntu 26.04 amd64**. It intentionally requires the 26.04 libc baseline; it is not intended for older Ubuntu releases. If your desktop does not associate `.deb` files with an installer, an alternative is:
 
 ```bash
-sudo apt install ./pomodoro-focus_1.1.0-1_amd64.deb
+sudo apt install ./pomodoro-focus_1.1.1-1_amd64.deb
 ```
 
 The app is installed in `/opt/pomodoro-focus`, with its launcher at `/usr/bin/pomodoro-focus`. No desktop shortcut or autostart is enabled automatically. Enable autostart through KDE System Settings → Autostart → Add Application if desired. Remove the package through your package manager; settings and history are retained.
@@ -20,7 +20,7 @@ The app is installed in `/opt/pomodoro-focus`, with its launcher at `/usr/bin/po
 For optional verification, download the adjacent `.deb.sha256` file alongside the `.deb` and run:
 
 ```bash
-sha256sum --check pomodoro-focus_1.1.0-1_amd64.deb.sha256
+sha256sum --check pomodoro-focus_1.1.1-1_amd64.deb.sha256
 ```
 
 **Updates (1.1.0 and later):** Settings → Application updates offers automatic checks (enabled by default), a manual Check now button and Update. Checks use public GitHub Releases, at startup and at most every 12 hours, without sending tasks, history or settings. Manual checking remains available when automatic checking is off. Update downloads a compatible `.deb`, verifies its SHA-256 from GitHub's release metadata and opens your system installer. Complete installation there, then use Quit and restart the app. An active unfinished timer is not restored. The app does not elevate privileges itself or claim that installation succeeded merely because the installer opened.
@@ -49,12 +49,12 @@ Flutter, Dart, compilers and development headers are **not needed** to run this 
 
 ## 2. Download and verify
 
-Download `pomodoro-focus-1.1.0-linux-x86_64.tar.gz` and `SHA256SUMS` from the [v1.1.0 release](https://github.com/SergeyShastin/pomodoro-focus/releases/tag/v1.1.0) into the same directory.
+Download `pomodoro-focus-1.1.1-linux-x86_64.tar.gz` and `SHA256SUMS` from the [v1.1.1 release](https://github.com/SergeyShastin/pomodoro-focus/releases/tag/v1.1.1) into the same directory.
 
 ```bash
 sha256sum --check SHA256SUMS
-tar -xzf pomodoro-focus-1.1.0-linux-x86_64.tar.gz
-cd pomodoro-focus-1.1.0-linux-x86_64
+tar -xzf pomodoro-focus-1.1.1-linux-x86_64.tar.gz
+cd pomodoro-focus-1.1.1-linux-x86_64
 ```
 
 ## 3. Try or install
@@ -114,7 +114,7 @@ Download the archive and its matching `SHA256SUMS` from the same release. The De
 For a distributable bundle and Debian package without personal build paths:
 
 ```bash
-python3 tool/build_linux_release.py --output dist/linux-1.1.0
+python3 tool/build_linux_release.py --output dist/linux-1.1.1
 ```
 
 This requires Flutter and `dpkg-deb` and does not use sudo or install the package. It builds in a neutral temporary directory because generated Dart plugin metadata can include its build path. The lower-level `tool/build_linux_deb.py` can package an existing neutral-path bundle; it rejects native libraries with home-directory paths. The packager includes MIT, Flutter and dependency notices, creates a root-owned package with declared runtime dependencies, and writes a separate `.deb.sha256` checksum. Use `--flutter-license-file` if the Flutter license cannot be found beside the bundle or through the Flutter SDK on PATH. Use a higher Debian version when packaging an update; `SOURCE_DATE_EPOCH` can be set for reproducible timestamps. The prebuilt archive remains available independently.
